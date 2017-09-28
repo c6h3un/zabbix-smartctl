@@ -1,0 +1,1 @@
+zabbix ALL=(ALL) NOPASSWD: /usr/sbin/smartctl,/usr/local/bin/smartctl-disks-discovery.pl

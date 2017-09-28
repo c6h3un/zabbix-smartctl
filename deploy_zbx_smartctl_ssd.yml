@@ -1,0 +1,35 @@
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ user }}"
+  vars_files:
+    - config.yml
+  vars:
+    ansible_ssh_pass: "{{ password }}"
+    ansible_sudo_pass: "{{ password }}"
+
+  become: True
+  tasks:
+#    - name: install smartctl
+#      apt: name=smartmontools state=present
+#      tags: install
+#    - name: copy script disk discovery
+#      copy: src=files/smartctl-disks-discovery.pl dest=/usr/local/bin/smartctl-disks-discovery.pl owner=root group=root mode=755
+#      tags: script
+#    - name: copy script sgx discovery
+#      copy: src=files/disk_sgX_discovery.sh dest=/usr/local/bin/disk_sgX_discovery.sh owner=root group=root mode=755
+#      tags: script
+    - name: copy script ssd discovery
+      copy: src=files/ssd_discovery.sh dest=/usr/local/bin/ssd_discovery.sh owner=root group=root mode=755
+      tags: script
+    - name: copy sudoers-zabbix configuration file
+      copy: src=files/sudoers_zabbix_smartctl_ssd dest=/etc/sudoers.d/zabbix owner=root group=root mode=644 force=no
+      tags: config_sudoers
+    - name: copy the configuration file
+      copy: src=files/zabbix_smartctl_ssd.conf dest=/etc/zabbix/zabbix_agentd.conf.d/smartctl owner=root group=root mode=644
+#      copy: src=files/zabbix_smartctl_lsi3008.conf dest=/etc/zabbix/zabbix_agentd.d/smartctl owner=root group=root mode=644
+      tags: config
+#    - name: zabbix-agent restart
+#      service: name=zabbix-agent state=restarted
+#      tags: config
+    
+

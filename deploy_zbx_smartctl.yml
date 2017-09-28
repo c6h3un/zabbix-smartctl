@@ -1,0 +1,29 @@
+---
+- hosts: "{{ target_host }}"
+  remote_user: "{{ user }}"
+  vars_files:
+    - config.yml
+  vars:
+    ansible_ssh_pass: "{{ password }}"
+    ansible_sudo_pass: "{{ password }}"
+    locale: "en_US.UTF-8"
+
+  become: True
+  tasks:
+    - name: install smartctl
+      apt: name=smartmontools state=present
+      tags: install
+    - name: copy script
+      copy: src=files/smartctl-disks-discovery.pl dest=/usr/local/bin/smartctl-disks-discovery.pl owner=root group=root mode=755
+      tags: script
+    - name: copy the configuration file
+      copy: src=files/sudoers_zabbix_smartctl dest=/etc/sudoers.d/zabbix owner=root group=root mode=644
+      tags: config_sudoers
+    - name: copy the configuration file
+      copy: src=files/zabbix_smartctl.conf dest=/etc/zabbix/zabbix_agentd.d/smartctl owner=root group=root mode=644
+      tags: config
+    - name: zabbix-agent restart
+      service: name=zabbix-agent state=restarted
+      tags: config
+    
+
